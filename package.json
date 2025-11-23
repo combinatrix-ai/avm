@@ -1,0 +1,20 @@
+{
+  "name": "avm",
+  "version": "1.0.0",
+  "description": "A version manager for AI coding agents. Think `nvm` for AI coding agents. **avm** provides reproducible agent execution environments, project-level configuration, and isolated agent runtimes.",
+  "main": "src/cli.js",
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node src/cli.js --help"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bin": {
+    "avm": "src/cli.js"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  }
+}

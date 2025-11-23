@@ -1,0 +1,8 @@
+{
+  "default": {
+    "name": "codex"
+  },
+  "codex": {
+    "args": "--dangerously-bypass-approvals-and-sandbox"
+  }
+}
