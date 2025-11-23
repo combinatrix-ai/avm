@@ -334,7 +334,7 @@ async function findAgentBinary(installPath, packageName) {
   return null;
 }
 
-function resolveTarget(agentArg, config, state, { packageOverride } = {}) {
+function resolveTarget(agentArg, config, state, { packageOverride, argsOverride } = {}) {
   const parsed = parseAgentSpec(agentArg);
   const rawName = parsed?.name || config.default || state.current?.name;
   const name = normalizeAgentName(rawName);
@@ -354,12 +354,13 @@ function resolveTarget(agentArg, config, state, { packageOverride } = {}) {
     statePackage: currentForAgent?.package,
   });
   const version = parsed?.version || fromConfig.version || currentForAgent?.version || 'latest';
+  const args = argsOverride || fromConfig.args || currentForAgent?.args || '';
 
   return {
     name,
     package: packageName,
     version,
-    args: fromConfig.args || '',
+    args,
   };
 }
 
@@ -439,10 +440,16 @@ async function installAction(agentArg, options) {
 async function globalAction(agentArg, options) {
   const config = await loadProjectConfig();
   const state = await readState();
-  const target = resolveTarget(agentArg, config, state, { packageOverride: options.package });
+  const target = resolveTarget(agentArg, config, state, {
+    packageOverride: options.package,
+    argsOverride: options.args,
+  });
   const { meta } = await ensureInstalled(target, { registry: options.registry });
   await setCurrent(meta);
-  console.log(`Set global default to ${meta.name}@${meta.version} (${meta.package})`);
+  console.log(
+    `Set global default to ${meta.name}@${meta.version} (${meta.package})` +
+      (meta.args ? ` with args="${meta.args}"` : '')
+  );
 }
 
 async function localAction(agentArg) {
@@ -492,7 +499,10 @@ async function currentAction() {
     );
     return;
   }
-  console.log(`${normalizedName}@${curr.version} (${curr.package})`);
+  console.log(
+    `${normalizedName}@${curr.version} (${curr.package})` +
+      (curr.args ? ` args="${curr.args}"` : '')
+  );
 }
 
 async function runAction(agentArg, agentArgs, options) {
@@ -543,6 +553,10 @@ program
   .argument('<agent>', 'Agent spec, e.g. codex or codex@0.45.1')
   .option('-p, --package <name>', 'Override the npm package name')
   .option('-r, --registry <url>', 'Custom npm registry URL')
+  .option(
+    '-a, --args <string>',
+    'Default args for this agent when no avm.config.json args are set'
+  )
   .action(wrapAction(globalAction));
 
 program

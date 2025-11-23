@@ -123,7 +123,11 @@ Resolution rules (in order of precedence):
   3. Previously used version for that agent in `~/.avm/state.json`
   4. `"latest"`
 - Args:
-  - `avm.config.json` (`"<agent-name>".args`) only. Stored per installation and prepended to the agent process arguments.
+  1. `avm global <agent> --args "<agent-args-string>"`
+  2. `avm.config.json` (`"<agent-name>".args`)
+  3. Previously used args for that agent in `~/.avm/state.json`
+
+  Args are stored per installation and prepended to the agent process arguments before any extra CLI arguments you pass to `avm`.
 
 ### How it works
 
