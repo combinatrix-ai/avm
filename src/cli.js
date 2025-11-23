@@ -25,7 +25,7 @@ program
   .description(
     'A minimal version manager for AI coding agents (npx/npm based). Supported: codex, claude, gemini.'
   )
-  .version(pkg.version);
+  .version(pkg.version, '-v, -V, --version');
 
 function normalizeAgentName(name) {
   return (name || '').trim().toLowerCase();
@@ -452,7 +452,7 @@ async function globalAction(agentArg, options) {
   );
 }
 
-async function localAction(agentArg) {
+async function localAction(agentArg, options) {
   const config = await loadProjectConfig();
   const parsed = parseAgentSpec(agentArg);
   if (!parsed || !parsed.name) {
@@ -476,13 +476,18 @@ async function localAction(agentArg) {
     agents[name].version = parsed.version;
   }
 
+  if (options && typeof options.args === 'string') {
+    agents[name].args = options.args;
+  }
+
   config.agents = agents;
 
   const targetPath = config.path || path.join(process.cwd(), 'avm.config.json');
   await writeProjectConfig(config, targetPath);
 
   const versionPart = parsed.version ? `@${parsed.version}` : '';
-  console.log(`Set local default to ${name}${versionPart} in ${targetPath}`);
+  const argsPart = agents[name].args ? ` with args="${agents[name].args}"` : '';
+  console.log(`Set local default to ${name}${versionPart} in ${targetPath}${argsPart}`);
 }
 
 async function currentAction() {
@@ -563,6 +568,10 @@ program
   .command('local')
   .description('Set local project default agent (writes avm.config.json)')
   .argument('<agent>', 'Agent spec, e.g. codex or codex@0.45.1')
+  .option(
+    '-a, --args <string>',
+    'Default args for this agent in avm.config.json'
+  )
   .action(wrapAction(localAction));
 
 program

@@ -54,6 +54,7 @@ avm list --remote # list npm packages of coding agents
 ```bash
 avm global codex@0.60.1   # set global default when no avm.config.json
 avm                       # start default agent (global or from avm.config.json)
+avm -v                    # show avm CLI version
 ```
 
 ### Project Configuration
@@ -62,6 +63,7 @@ You can manage project defaults via `avm.config.json`. Create/update it manually
 
 ```bash
 avm local codex@0.60.1    # writes or updates avm.config.json in this directory
+avm local codex -a "--dangerously-bypass-approvals-and-sandbox"  # set default args in avm.config.json
 ```
 
 Example `avm.config.json`:
