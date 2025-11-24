@@ -13,11 +13,16 @@ function normalizeAgentName(name) {
 function assertSupportedAgent(name) {
   if (!SUPPORTED_AGENTS.has(name)) {
     const supported = Array.from(SUPPORTED_AGENTS).join(', ');
-    throw new Error(`Unsupported agent "${name}". Supported agents: ${supported}.`);
+    throw new Error(
+      `Unsupported agent "${name}". Supported agents: ${supported}.`,
+    );
   }
 }
 
-function resolvePackageName(name, { packageOverride, configPackage, statePackage }) {
+function resolvePackageName(
+  name,
+  { packageOverride, configPackage, statePackage },
+) {
   if (packageOverride) return packageOverride;
   if (configPackage) return configPackage;
   if (statePackage) return statePackage;
@@ -25,7 +30,7 @@ function resolvePackageName(name, { packageOverride, configPackage, statePackage
   if (builtin) return builtin;
   throw new Error(
     `No npm package configured for agent "${name}". ` +
-      `Specify with --package or configure it in avm.config.json.`
+      `Specify with --package or configure it in avm.config.json.`,
   );
 }
 
@@ -54,12 +59,19 @@ function parseArgsString(argString) {
     .filter(Boolean);
 }
 
-function resolveTarget(agentArg, config, state, { packageOverride, argsOverride } = {}) {
+function resolveTarget(
+  agentArg,
+  config,
+  state,
+  { packageOverride, argsOverride } = {},
+) {
   const parsed = parseAgentSpec(agentArg);
   const rawName = parsed?.name || config.default || state.current?.name;
   const name = normalizeAgentName(rawName);
   if (!name) {
-    throw new Error('No agent specified. Use avm <agent>, avm global <agent>, or configure avm.config.json.');
+    throw new Error(
+      'No agent specified. Use avm <agent>, avm global <agent>, or configure avm.config.json.',
+    );
   }
   assertSupportedAgent(name);
 
@@ -73,7 +85,11 @@ function resolveTarget(agentArg, config, state, { packageOverride, argsOverride 
     configPackage: fromConfig.package,
     statePackage: currentForAgent?.package,
   });
-  const version = parsed?.version || fromConfig.version || currentForAgent?.version || 'latest';
+  const version =
+    parsed?.version ||
+    fromConfig.version ||
+    currentForAgent?.version ||
+    'latest';
   const args = argsOverride || fromConfig.args || currentForAgent?.args || '';
 
   return {
@@ -94,4 +110,3 @@ module.exports = {
   parseArgsString,
   resolveTarget,
 };
-

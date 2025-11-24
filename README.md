@@ -5,10 +5,10 @@ Think `nvm` for AI coding agents. **avm** provides reproducible agent execution 
 
 ## Features
 
-* Install specific versions of AI coding agents
-* Use different agent versions per project
-* `avm.config.json` project configuration
-* Reproducible agent environments under `~/.avm`
+- Install specific versions of AI coding agents
+- Use different agent versions per project
+- `avm.config.json` project configuration
+- Reproducible agent environments under `~/.avm`
 
 ## Supported Agents
 
@@ -40,11 +40,13 @@ avm install codex --registry https://registry.npmjs.org     # custom registry
 ### Listing Agents
 
 Installed
+
 ```bash
 avm list
 ```
 
 Remote (including not installed)
+
 ```bash
 avm list --remote # list npm packages of coding agents
 ```
@@ -110,9 +112,9 @@ When you run `avm` inside the project, it will prefer the agent specified in the
 
 ### How it works
 
-* Agents install into `~/.avm/agents/<name>/<version>` via `npm install --prefix`.
-* Binaries are resolved from the package `bin` field (fallback to `node_modules/.bin/<package>`).
-* State is stored in `~/.avm/state.json` and updated when you `global` or run an agent.
+- Agents install into `~/.avm/agents/<name>/<version>` via `npm install --prefix`.
+- Binaries are resolved from the package `bin` field (fallback to `node_modules/.bin/<package>`).
+- State is stored in `~/.avm/state.json` and updated when you `global` or run an agent.
 
 #### Files under `~/.avm`
 
@@ -165,10 +167,10 @@ Default args are prepended to the agent process arguments before any extra CLI a
 
 ## Roadmap
 
-* Optional fully-managed Node runtimes
-* Agent marketplace / registry
-* Lockfile for full reproducibility
-* Agent diff / compare functionality
+- Optional fully-managed Node runtimes
+- Agent marketplace / registry
+- Lockfile for full reproducibility
+- Agent diff / compare functionality
 
 ## Development & Release
 

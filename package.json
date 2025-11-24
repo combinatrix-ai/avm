@@ -5,7 +5,10 @@
   "main": "src/cli.js",
   "scripts": {
     "start": "node src/cli.js",
-    "test": "node src/cli.js --help"
+    "test": "node src/cli.js --help",
+    "prepare": "simple-git-hooks",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -19,5 +22,12 @@
   },
   "dependencies": {
     "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "simple-git-hooks": "^2.11.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run format:check"
   }
 }

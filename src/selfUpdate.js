@@ -36,7 +36,9 @@ function fetchLatestAvmVersion() {
         if (res.statusCode !== 200) {
           res.resume();
           return reject(
-            new Error(`Unexpected status code ${res.statusCode} from npm registry`)
+            new Error(
+              `Unexpected status code ${res.statusCode} from npm registry`,
+            ),
           );
         }
         let body = '';
@@ -52,11 +54,13 @@ function fetchLatestAvmVersion() {
           }
         });
         return null;
-      }
+      },
     );
     req.on('error', (err) => reject(err));
     req.setTimeout(3000, () => {
-      req.destroy(new Error('Timeout while checking npm registry for avm updates'));
+      req.destroy(
+        new Error('Timeout while checking npm registry for avm updates'),
+      );
     });
   });
 }
@@ -81,7 +85,9 @@ async function maybeNotifySelfUpdate() {
       latestVersion = await fetchLatestAvmVersion();
     } catch (err) {
       if (process.env.AVM_DEBUG) {
-        console.warn(`Warning: failed to check for avm updates: ${err.message}`);
+        console.warn(
+          `Warning: failed to check for avm updates: ${err.message}`,
+        );
       }
     }
 
@@ -101,10 +107,10 @@ async function maybeNotifySelfUpdate() {
 
     if (latestVersion && isNewerVersion(latestVersion, pkg.version)) {
       console.log(
-        `A new version of avm is available: ${pkg.version} → ${latestVersion}.`
+        `A new version of avm is available: ${pkg.version} → ${latestVersion}.`,
       );
       console.log(
-        `Update with: npm install -g ${pkg.name}@latest    # or: avm self-update`
+        `Update with: npm install -g ${pkg.name}@latest    # or: avm self-update`,
       );
     }
   } catch (err) {
@@ -125,4 +131,3 @@ module.exports = {
   maybeNotifySelfUpdate,
   selfUpdateAction,
 };
-

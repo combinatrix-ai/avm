@@ -19,7 +19,7 @@ const program = new Command();
 program
   .name('avm')
   .description(
-    'A minimal version manager for AI coding agents (npx/npm based).\n\nSupported agents: codex, claude, gemini.\nAgent spec: <name> or <name>@<version>, e.g. codex, codex@latest, codex@0.60.1.'
+    'A minimal version manager for AI coding agents (npx/npm based).\n\nSupported agents: codex, claude, gemini.\nAgent spec: <name> or <name>@<version>, e.g. codex, codex@latest, codex@0.60.1.',
   )
   .version(pkg.version, '-v, -V, --version')
   .addHelpText(
@@ -32,7 +32,7 @@ Examples:
   $ avm global claude@latest
   $ avm local gemini@latest
   $ avm codex@latest -- --help    # run an agent with extra args
-`
+`,
   );
 
 program
@@ -51,7 +51,7 @@ program
   .option('-r, --registry <url>', 'Custom npm registry URL')
   .option(
     '-a, --args <string>',
-    'Default args for this agent when no avm.config.json args are set'
+    'Default args for this agent when no avm.config.json args are set',
   )
   .action(wrapAction(globalAction));
 
@@ -61,7 +61,7 @@ program
   .argument('<agent>', 'Agent spec, e.g. codex or codex@0.45.1')
   .option(
     '-a, --args <string>',
-    'Default args for this agent in avm.config.json'
+    'Default args for this agent in avm.config.json',
   )
   .action(wrapAction(localAction));
 
@@ -86,7 +86,7 @@ program
 program
   .argument(
     '[agent]',
-    'Agent to run (defaults to avm.config.json default or current)'
+    'Agent to run (defaults to avm.config.json default or current)',
   )
   .argument('[agentArgs...]', 'Arguments forwarded to the agent')
   .option('-p, --package <name>', 'Override the npm package name')

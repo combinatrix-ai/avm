@@ -80,7 +80,9 @@ function runCommand(command, args, options = {}) {
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`${command} ${args.join(' ')} exited with code ${code}`));
+        reject(
+          new Error(`${command} ${args.join(' ')} exited with code ${code}`),
+        );
       }
     });
     child.on('error', (err) => reject(err));
@@ -92,7 +94,9 @@ async function ensureInstalled(target, { registry } = {}) {
   const installPath = installDir(target.name, target.version);
   const metaPath = path.join(installPath, '.meta.json');
   const hasInstall = await pathExists(installPath);
-  const existingMeta = hasInstall ? (await readJson(metaPath, null)) || null : null;
+  const existingMeta = hasInstall
+    ? (await readJson(metaPath, null)) || null
+    : null;
 
   const needsReinstall =
     !hasInstall ||
@@ -131,7 +135,12 @@ async function ensureInstalled(target, { registry } = {}) {
 }
 
 async function findAgentBinary(installPath, packageName) {
-  const pkgJsonPath = path.join(installPath, 'node_modules', packageName, 'package.json');
+  const pkgJsonPath = path.join(
+    installPath,
+    'node_modules',
+    packageName,
+    'package.json',
+  );
   let binRelative = null;
 
   try {
@@ -150,7 +159,12 @@ async function findAgentBinary(installPath, packageName) {
   }
 
   if (binRelative) {
-    const candidate = path.join(installPath, 'node_modules', packageName, binRelative);
+    const candidate = path.join(
+      installPath,
+      'node_modules',
+      packageName,
+      binRelative,
+    );
     if (await pathExists(candidate)) return candidate;
   }
 
