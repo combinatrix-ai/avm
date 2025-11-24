@@ -1,6 +1,6 @@
 {
   "name": "@combinatrix-ai/avm",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A version manager for AI coding agents. Think `nvm` for AI coding agents. **avm** provides reproducible agent execution environments, project-level configuration, and isolated agent runtimes.",
   "main": "src/cli.js",
   "scripts": {
