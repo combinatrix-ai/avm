@@ -58,9 +58,23 @@ avm -v                    # show avm CLI version
 avm self-update           # update avm itself via npm -g
 ```
 
-### Project Configuration
+### avm self-update and update checks
 
-You can manage project defaults via `avm.config.json`. Create/update it manually or via:
+- `avm self-update` runs `npm install -g @combinatrix-ai/avm@latest` under the hood (or `--to <version>` for a specific version).
+- `avm` will periodically check the npm registry (at most once per day) and print a message if a newer version of `avm` is available.
+- Set `AVM_NO_UPDATE_CHECK=1` to disable the automatic update check.
+
+## Configuration & state
+
+You configure per-project defaults via `avm.config.json`, and avm keeps global installation and “current agent” state under `~/.avm`.
+
+### `avm.config.json` (project config)
+
+- File name: `avm.config.json`
+- Location: searched from the current directory upward until found; the nearest one wins.
+- Purpose: define project-level defaults for which agent to run, which package/version to use, and what default args to prepend.
+
+You can create or update it manually, or via:
 
 ```bash
 avm local codex@0.60.1    # writes or updates avm.config.json in this directory
@@ -92,57 +106,62 @@ avm # Start codex with args provided
 avm claude           # Start claude with its args from avm.config.json
 ```
 
-When you run `avm` inside the project, it will prefer the agent specified in `avm.config.json`. (Shell auto-switch hooks are not implemented yet.)
-
-#### Config format
-
-- File name: `avm.config.json`
-- Location: searched from the current directory upward until found; the nearest one wins.
-- Shape:
-
-```json
-{
-  "default": {
-    "name": "<agent-name>"        // e.g. "codex", "claude", "gemini"
-  },
-  "<agent-name>": {
-    "package": "<npm-package-name>", // optional, defaults to built-in mapping
-    "version": "<version-or-tag>",   // optional, defaults to "latest"
-    "args": "<agent-args-string>"    // optional, split on spaces before CLI args
-  }
-}
-```
-
-Resolution rules (in order of precedence):
-
-- Package name:
-  1. CLI `--package`
-  2. `avm.config.json` (`"<agent-name>".package`)
-  3. Previously used package for that agent in `~/.avm/state.json`
-  4. Built-in defaults (`codex` → `@openai/codex`, etc.)
-- Version:
-  1. `<agent>@<version>` CLI spec (e.g. `codex@0.60.1`)
-  2. `avm.config.json` (`"<agent-name>".version`)
-  3. Previously used version for that agent in `~/.avm/state.json`
-  4. `"latest"`
-- Args:
-  1. `avm global <agent> --args "<agent-args-string>"`
-  2. `avm.config.json` (`"<agent-name>".args`)
-  3. Previously used args for that agent in `~/.avm/state.json`
-
-  Args are stored per installation and prepended to the agent process arguments before any extra CLI arguments you pass to `avm`.
-
-### avm self-update and update checks
-
-- `avm self-update` runs `npm install -g @combinatrix-ai/avm@latest` under the hood (or `--to <version>` for a specific version).
-- `avm` will periodically check the npm registry (at most once per day) and print a message if a newer version of `avm` is available.
-- Set `AVM_NO_UPDATE_CHECK=1` to disable the automatic update check.
+When you run `avm` inside the project, it will prefer the agent specified in the nearest `avm.config.json`.
 
 ### How it works
 
 * Agents install into `~/.avm/agents/<name>/<version>` via `npm install --prefix`.
 * Binaries are resolved from the package `bin` field (fallback to `node_modules/.bin/<package>`).
 * State is stored in `~/.avm/state.json` and updated when you `global` or run an agent.
+
+#### Files under `~/.avm`
+
+**Files**
+
+- `~/.avm/agents/<name>/<version>/.meta.json`
+  - Written by `avm install <agent>`, `avm global <agent>`, and when running an agent.
+  - Stores installation metadata: `{ name, package, version, args, installedAt }`.
+- `~/.avm/state.json`
+  - Updated by `avm global <agent>` and whenever you run an agent via `avm ...`.
+  - Stores the current agent under `current` (plus timestamps and any future state).
+
+**What each command updates**
+
+- `avm install <agent>`:
+  - Ensures the agent is installed under `~/.avm/agents/<name>/<version>` and writes/updates `.meta.json` there.
+  - Does **not** modify `~/.avm/state.json` or any `avm.config.json`.
+- `avm global <agent> [--args "<agent-args>"]`:
+  - Ensures the agent is installed and updates the corresponding `.meta.json` (including `args` when provided).
+  - Updates `~/.avm/state.json` (the `current` agent: name, package, version, args).
+  - Does **not** touch `avm.config.json`.
+- `avm local <agent> [--args "<agent-args>"]`:
+  - Creates or updates `avm.config.json` (nearest in the directory tree): sets `"default.name"` and per-agent `version` / `args`.
+  - Does **not** install the agent or change `~/.avm/state.json` or any `.meta.json`.
+
+**Resolution rules when running `avm`**
+
+When `avm` decides what to run, it combines CLI input, project config, and saved state:
+
+- Agent name:
+  1. CLI `<agent>` / `<agent>@<version>` (e.g. `avm codex@0.60.1`)
+  2. `avm.config.json.default.name` (nearest config in the directory tree)
+  3. `~/.avm/state.json.current.name` (last used / global default)
+- Package name:
+  1. CLI `--package`
+  2. `avm.config.json["<agent-name>"].package`
+  3. `~/.avm/state.json.current.package` for that agent
+  4. Built-in defaults (`codex` → `@openai/codex`, etc.)
+- Version:
+  1. `<agent>@<version>` in the CLI (e.g. `codex@0.60.1`)
+  2. `avm.config.json["<agent-name>"].version`
+  3. `~/.avm/state.json.current.version` for that agent
+  4. `"latest"`
+- Default args:
+  1. `avm.config.json["<agent-name>"].args` (project-scoped defaults)
+  2. `~/.avm/state.json.current.args` / `.meta.json` for that agent (set via `avm global <agent> --args "..."` or previous runs)
+  3. No default args
+
+Default args are prepended to the agent process arguments before any extra CLI arguments you pass after the agent name (e.g. `avm codex -- extra flags`).
 
 ## Roadmap
 

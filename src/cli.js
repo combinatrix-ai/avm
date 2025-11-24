@@ -19,9 +19,21 @@ const program = new Command();
 program
   .name('avm')
   .description(
-    'A minimal version manager for AI coding agents (npx/npm based). Supported: codex, claude, gemini.'
+    'A minimal version manager for AI coding agents (npx/npm based).\n\nSupported agents: codex, claude, gemini.\nAgent spec: <name> or <name>@<version>, e.g. codex, codex@latest, codex@0.60.1.'
   )
-  .version(pkg.version, '-v, -V, --version');
+  .version(pkg.version, '-v, -V, --version')
+  .addHelpText(
+    'after',
+    `
+
+Examples:
+  $ avm install codex@latest
+  $ avm install codex@0.60.1
+  $ avm global claude@latest
+  $ avm local gemini@latest
+  $ avm codex@latest -- --help    # run an agent with extra args
+`
+  );
 
 program
   .command('install')
