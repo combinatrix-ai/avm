@@ -55,6 +55,7 @@ avm list --remote # list npm packages of coding agents
 avm global codex@0.60.1   # set global default when no avm.config.json
 avm                       # start default agent (global or from avm.config.json)
 avm -v                    # show avm CLI version
+avm self-update           # update avm itself via npm -g
 ```
 
 ### Project Configuration
@@ -130,6 +131,12 @@ Resolution rules (in order of precedence):
   3. Previously used args for that agent in `~/.avm/state.json`
 
   Args are stored per installation and prepended to the agent process arguments before any extra CLI arguments you pass to `avm`.
+
+### avm self-update and update checks
+
+- `avm self-update` runs `npm install -g @combinatrix-ai/avm@latest` under the hood (or `--to <version>` for a specific version).
+- `avm` will periodically check the npm registry (at most once per day) and print a message if a newer version of `avm` is available.
+- Set `AVM_NO_UPDATE_CHECK=1` to disable the automatic update check.
 
 ### How it works
 
