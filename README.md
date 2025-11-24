@@ -150,3 +150,26 @@ Resolution rules (in order of precedence):
 * Agent marketplace / registry
 * Lockfile for full reproducibility
 * Agent diff / compare functionality
+
+## Development & Release
+
+Basic release flow (handled by GitHub Actions):
+
+1. Make code changes and ensure tests pass: `npm test`
+2. Bump the version with npm (do not edit `package.json` manually):
+
+   ```bash
+   npm version patch   # or: minor / major
+   ```
+
+   This updates `package.json`, creates a commit, and tags `vX.Y.Z`.
+
+3. Push the branch and tags:
+
+   ```bash
+   git push origin main --follow-tags
+   ```
+
+4. The `Publish Package` workflow (triggered by the `v*` tag) runs tests and publishes `@combinatrix-ai/avm` to npm.
+
+Avoid running `npm publish` locally; prefer the CI-based publish flow above.
